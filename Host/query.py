@@ -2,6 +2,7 @@ from pprint import pprint as pp
 import requests
 import bottle
 from bottle import run, post, request, response, get, route
+from balance import choose
 
 class EnableCors(object):
     name = 'enable_cors'
@@ -29,6 +30,12 @@ def process():
     # response = requests.get("http://192.168.146."+str(vm_id)+":8081/stats")
     response = requests.get("http://localhost:8081/stats")
     return response
+
+@app.route('/', method='GET')
+def landing():
+    servers = ['http://localhost:8081', 'http://google.com']
+    chosen = choose(servers)
+    return requests.get(chosen)
 
 app.install(EnableCors())
 
