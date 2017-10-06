@@ -6,7 +6,6 @@ from balance import choose
 
 class EnableCors(object):
     name = 'enable_cors'
-    api = 2
 
     def apply(self, fn, context):
         def _enable_cors(*args, **kwargs):
@@ -27,9 +26,23 @@ app = bottle.app()
 @app.route('/stats',method = 'GET')
 def process():
     const = 8080
-    vm_id = request.query['id'] + const
-    response = requests.get("http://localhost:"+str(vm_id)+"/stats")
-    #response = requests.get("http://localhost:8081/stats")
+    serverCount = 2
+    response = []
+
+    vm_id = int(request.query['id']) + const
+
+    # if id = 0, return status array of all servers 
+    if vm_id == const:
+        for i in range(1, serverCount+1):
+            try:
+                print("url = " + "http://localhost:"+str(vm_id + i)+"/stats")
+                res = requests.get("http://localhost:"+str(vm_id + i)+"/stats")
+                response.append(res)
+            except:
+                pass
+    else:
+        response = requests.get("http://localhost:"+str(vm_id)+"/stats")
+
     return response
 
 @app.route('/', method='GET')
