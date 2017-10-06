@@ -14,7 +14,7 @@
             function request(){
                 data = $.ajax({
                     request: 'GET',
-                    url: 'http://localhost:8080/stats',
+                    url: 'http://localhost:8070/stats',
                     async: false,
                     success: function(status){
                     },
@@ -22,7 +22,7 @@
                     }
                 }).responseText;
                 data = JSON.parse(data);
-                // console.log(data);
+                console.log(data);
                 return data.cpu;
             }
             window.onload = function () {
@@ -49,7 +49,7 @@
                 var updateChart = function (count) {
                 
                     y = request();
-                    // console.log("returned", y);
+                    console.log("returned", y);
                     count = count || 1;
                 
                     for (var j = 0; j < count; j++) {
