@@ -3,6 +3,7 @@ import requests
 import bottle
 from bottle import run, post, request, response, get, route
 from balance import choose
+import json
 
 class EnableCors(object):
     name = 'enable_cors'
@@ -27,7 +28,7 @@ app = bottle.app()
 def process():
     const = 8080
     serverCount = 2
-    response = []
+    response = dict()
 
     vm_id = int(request.query['id']) + const
 
@@ -37,20 +38,22 @@ def process():
             try:
                 print("url = " + "http://localhost:"+str(vm_id + i)+"/stats")
                 res = requests.get("http://localhost:"+str(vm_id + i)+"/stats")
-                response.append(res)
+                response[str(i)] = json.loads(res.text)
             except:
                 pass
     else:
-        response = requests.get("http://localhost:"+str(vm_id)+"/stats")
-
+        response[request.query['id']] = json.loads(requests.get("http://localhost:"+str(vm_id)+"/stats").text)
     return response
 
 @app.route('/', method='GET')
 def landing():
-    #servers = ['http://localhost:8081', 'http://localhost:8082', 'http://google.com']
     servers = ['http://localhost:8081', 'http://localhost:8082']
     chosen = choose(servers)
     return requests.get(chosen)
+
+@app.route('/numservers', method = "GET")
+def getservers():
+    return {'n': 2}
 
 app.install(EnableCors())
 

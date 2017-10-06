@@ -6,73 +6,9 @@
         crossorigin="anonymous"></script>
         <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>        
         <script type="text/javascript" src="js/main.js"></script>
+        <link rel="stylesheet" href="style/main.css"/>
     </head>
     <body>
         <div id="chartContainer" style="width: 900px; height: 500px"></div>            
-        <script crossorigin="anonymous">
-            
-            function request(id){
-                data = $.ajax({
-                    request: 'GET',
-                    url: 'http://localhost:8070/stats?id='+id,
-                    async: false,
-                    success: function(status){
-                    },
-                    failure: function(status){
-                    }
-                }).responseText;
-                data = JSON.parse(data);
-                console.log(data);
-                return data.cpu;
-            }
-            window.onload = function () {
-                
-                var dps = []; // dataPoints
-                var chart = new CanvasJS.Chart("chartContainer", {
-                    title :{
-                        text: "CPU"
-                    },
-                    axisY: {
-                        includeZero: false
-                    },      
-                    data: [{
-                        type: "area",
-                        dataPoints: dps
-                    }]
-                });
-                
-                var xVal = 0;
-                var yVal = 100; 
-                var updateInterval = 150;
-                var dataLength = 20; // number of dataPoints visible at any point
-                
-                var updateChart = function (count) {
-                
-                    y = request(1);
-                    console.log("returned", y);
-                    count = count || 1;
-                
-                    for (var j = 0; j < count; j++) {
-                        // yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
-                        yVal = y;
-                        dps.push({
-                            x: xVal,
-                            y: yVal
-                        });
-                        xVal = xVal + 1;
-                    }
-                
-                    if (dps.length > dataLength) {
-                        dps.shift();
-                    }
-                
-                    chart.render();
-                };
-                
-                updateChart(dataLength);
-                setInterval(function(){updateChart()}, updateInterval);
-                
-                }
-        </script>
     </body>
-</html>
+</html> 
