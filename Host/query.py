@@ -32,5 +32,5 @@ def process():
 
 app.install(EnableCors())
 
-app.run(port=8080, debug=True)
+app.run(port=8070, debug=True)
 
