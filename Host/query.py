@@ -26,14 +26,16 @@ app = bottle.app()
 
 @app.route('/stats',method = 'GET')
 def process():
-    # vm_id = request.query['id']
-    # response = requests.get("http://192.168.146."+str(vm_id)+":8081/stats")
-    response = requests.get("http://localhost:8081/stats")
+    const = 8080
+    vm_id = request.query['id'] + const
+    response = requests.get("http://localhost:"+str(vm_id)+"/stats")
+    #response = requests.get("http://localhost:8081/stats")
     return response
 
 @app.route('/', method='GET')
 def landing():
-    servers = ['http://localhost:8081', 'http://google.com']
+    #servers = ['http://localhost:8081', 'http://localhost:8082', 'http://google.com']
+    servers = ['http://localhost:8081', 'http://localhost:8082']
     chosen = choose(servers)
     return requests.get(chosen)
 

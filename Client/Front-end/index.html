@@ -11,10 +11,10 @@
         <div id="chartContainer" style="width: 900px; height: 500px"></div>            
         <script crossorigin="anonymous">
             
-            function request(){
+            function request(id){
                 data = $.ajax({
                     request: 'GET',
-                    url: 'http://localhost:8070/stats',
+                    url: 'http://localhost:8070/stats?id='+id,
                     async: false,
                     success: function(status){
                     },
