@@ -23,7 +23,7 @@ class EnableCors(object):
 
 
 app = bottle.app()
-serverCount = 2
+serverCount = 4
 
 @app.route('/stats',method = 'GET')
 def process():
