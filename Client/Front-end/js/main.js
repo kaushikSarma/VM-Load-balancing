@@ -22,7 +22,8 @@ function requestNumServers(){
         failure: function(status){
         }
     }).responseText;
-    return JSON.parse(data)['i'];
+    console.log("Number of servers = " + JSON.parse(data))
+    return JSON.parse(data)['n'];
 }
 
 window.onload = function () {

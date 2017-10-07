@@ -23,11 +23,11 @@ class EnableCors(object):
 
 
 app = bottle.app()
+serverCount = 2
 
 @app.route('/stats',method = 'GET')
 def process():
     const = 8080
-    serverCount = 2
     response = dict()
 
     vm_id = int(request.query['id']) + const
@@ -53,7 +53,7 @@ def landing():
 
 @app.route('/numservers', method = "GET")
 def getservers():
-    return {'n': 2}
+    return {'n': serverCount}
 
 app.install(EnableCors())
 
