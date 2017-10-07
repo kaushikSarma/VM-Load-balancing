@@ -45,12 +45,6 @@ def process():
         response[request.query['id']] = json.loads(requests.get("http://localhost:"+str(vm_id)+"/stats").text)
     return response
 
-@app.route('/', method='GET')
-def landing():
-    servers = ['http://localhost:8081', 'http://localhost:8082']
-    chosen = choose(servers + '/stats')
-    return requests.get(chosen)
-
 @app.route('/numservers', method = "GET")
 def getservers():
     return {'n': serverCount}
