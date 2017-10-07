@@ -48,7 +48,7 @@ def process():
 @app.route('/', method='GET')
 def landing():
     servers = ['http://localhost:8081', 'http://localhost:8082']
-    chosen = choose(servers)
+    chosen = choose(servers + '/stats')
     return requests.get(chosen)
 
 @app.route('/numservers', method = "GET")
