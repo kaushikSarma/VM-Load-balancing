@@ -1,85 +1,96 @@
-function request(id){
-    data = $.ajax({
-        request: 'GET',
-        url: 'http://localhost:8070/stats?id='+id,
-        async: false,
-        success: function(status){
-        },
-        failure: function(status){
-        }
-    }).responseText;
-    data = JSON.parse(data);
-    return data;
-}
-
-function requestNumServers(){
-    data = $.ajax({
-        request: 'GET',
-        url: 'http://localhost:8070/numservers',
-        async: false,
-        success: function(status){
-        },
-        failure: function(status){
-        }
-    }).responseText;
-    console.log("Number of servers = " + JSON.parse(data))
-    return JSON.parse(data)['n'];
-}
-
-window.onload = function () {
-    nservers = requestNumServers();
-    
-    var xVal = 0;
-    var yVal = 100; 
-    var updateInterval = 300;
-    var dataLength = 20; // number of dataPoints visible at any point
-    
-    chartContainer = $('#chartContainer');
-
-    console.log(chartContainer);
-    charts = [];
-    dps = []
-    
-    for(i=1; i <= nservers; i++){
-        chartContainer.append('<div class="chart" id="chart' + i + '"></div>');
-        dps[i] = []
-        charts[i] = new CanvasJS.Chart("chart" + i, {
-                title :{
-                    text: "CPU Server " + i 
+(function($){
+    var GLOBALS = {
+        nservers: 0,
+        updateInterval: 1000,
+        dataLength: 20,
+        servers: {}
+    },
+    CPUGraphs = {
+        container: null,
+        charts: [],        
+        dps: [],
+        xVal: 0
+    },
+    MEMGraphs = {
+        container: null,
+        charts: [],
+        dps: [],
+        xVal: 0
+    },
+    ServerRequest = {
+        request: function(id){
+            data = $.ajax({
+                request: 'GET',
+                url: 'http://localhost:8070/stats?id='+id,
+                async: false,
+                success: function(status){
                 },
-                axisY: {
-                    includeZero: false
-                },      
-                data: [{
-                    type: "area",
-                    dataPoints: dps[i]
-                }]
-            });
-    }
-
-    var updateChart = function (chartid, y) {
-        count = 1;
+                failure: function(status){
+                }
+            }).responseText;
+            console.log(data);
+            data = JSON.parse(data);
+            return data;
+        },
+        requestNumServers: function(){
+            data = $.ajax({
+                request: 'GET',
+                url: 'http://localhost:8070/numservers',
+                async: false,
+                success: function(status){
+                },
+                failure: function(status){
+                }
+            }).responseText;
+            data = JSON.parse(data)['n'];
+            console.log("Number of servers = " + data)
+            return data;
+        }
+    },
+    PopulateCharts = function(category, type){
+        category.container = $('#' + type + 'ChartContainer');
+        for(i=1; i <= GLOBALS.nservers; i++){
+            category.container.append('<div class="chart" id="' + type + 'Chart' + i + '"></div>');
+            category.dps[i] = []
+            category.charts[i] = new CanvasJS.Chart(type + "Chart" + i, {
+                    title :{
+                        text: type + " Server " + i 
+                    },
+                    axisY: {
+                        includeZero: false
+                    },      
+                    data: [{
+                        type: "area",
+                        dataPoints: category.dps[i],
+                        valueFormatString: ' '
+                    }]
+                });
+        }
+    },
+    UpdateCharts = function(category, chartid, y){
         console.log(chartid, y);
-        for (var j = 0; j < count; j++) {
-            // yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
-            yVal = y;
-            dps[chartid].push({
-                x: xVal,
-                y: yVal
-            });
-            xVal = xVal + 1;
-        }
+        yVal = y;
+        category.dps[chartid].push({
+            x: category.xVal,
+            y: yVal
+        });
+        category.xVal = category.xVal + 1;
 
-        if (dps[chartid].length > dataLength) {
-            dps[chartid].shift();
+        if (category.dps[chartid].length > GLOBALS.dataLength) {
+            category.dps[chartid].shift();
         }
-        charts[chartid].render();
+        category.charts[chartid].render();
     };
-    
-    setInterval(function(){
-        servers = request(0);
-        for (var key in servers) {
-            updateChart(key, servers[key].cpu);
-        }
-    }, updateInterval);
-}
+    $(document).ready(function(){
+        GLOBALS.nservers = ServerRequest.requestNumServers();
+        PopulateCharts(CPUGraphs, 'cpu');
+        PopulateCharts(MEMGraphs, 'mem');
+        setInterval(function(){
+            GLOBALS.servers = ServerRequest.request(0);
+            for (var key in GLOBALS.servers) {
+                UpdateCharts(CPUGraphs, key, GLOBALS.servers[key].cpu);
+                UpdateCharts(MEMGraphs, key, GLOBALS.servers[key].cpu);
+            }
+        }, GLOBALS.updateInterval);    
+    });
+})(jQuery);
