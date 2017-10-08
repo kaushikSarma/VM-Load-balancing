@@ -24,12 +24,13 @@ class EnableCors(object):
 
 app = bottle.app()
 serverCount = 4
-base = "http://192.168.146.%s:8080/stats"
-start = 193
-vmList = generateServerAddress(base, start)
 
 def generateServerAddress(base, start):
     return [base % str(i) for i in range(start, start + serverCount)]
+
+base = "http://192.168.146.%s:8080/stats"
+start = 193
+vmList = generateServerAddress(base, start)
 
 @app.route('/stats',method = 'GET')
 def process():

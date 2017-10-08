@@ -1,6 +1,5 @@
 from tornado import ioloop
 import time
-from Host.balance import landing
 import sys
 
 s = time.time()
@@ -8,6 +7,7 @@ maxRequestCount = 1000
 
 i = 0
 c = 0
+ip = "http://localhost:8071/"
 
 # Suppresses the error from printing
 class DevNull:
@@ -22,11 +22,11 @@ class DevNull:
             print(c)
             handle_request()
 
-sys.stderr = DevNull()
+#sys.stderr = DevNull()
 
 def handle_request():
     
-    res = landing()
+    res = requests.get(ip)
     
     global i
     i -= 1
@@ -60,4 +60,4 @@ except ConnectionRefusedError:
         print("Over dude")
         pass
 
-print(time.time() - s)
+print("Time taken to process = " + str(time.time() - s))
