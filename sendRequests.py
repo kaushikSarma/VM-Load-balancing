@@ -5,12 +5,12 @@ import sys
 import requests
 
 s = time.time()
-maxRequestCount = 1000
+maxRequestCount = 1000000000
 
 i = 0
 c = 0
-#ip = "http://192.168.1.103:8071/"
-ip = "http://localhost:8071/"
+ip = "http://192.168.1.103:8071/"
+# ip = "http://localhost:8071/"
 
 # Suppresses the error from printing
 class DevNull:
