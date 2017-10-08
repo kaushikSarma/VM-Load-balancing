@@ -1,5 +1,6 @@
 from tornado import ioloop
 import time
+import requests
 import sys
 import requests
 
@@ -8,6 +9,7 @@ maxRequestCount = 1000
 
 i = 0
 c = 0
+#ip = "http://192.168.1.103:8071/"
 ip = "http://localhost:8071/"
 
 # Suppresses the error from printing
@@ -15,18 +17,21 @@ class DevNull:
     i = 0
     c = 0
     def write(self, msg):
-        #pass
+        pass
         # This part of code isn't working, check it out.
+        '''
         for j in range(1, 20):
             i += 1
             c += 1
             print(c)
             handle_request()
+        '''
 
 #sys.stderr = DevNull()
 
 def handle_request():
     
+    print("Processing ip = " + ip)
     res = requests.get(ip)
     
     global i
@@ -42,7 +47,7 @@ def handle_request():
 for j in range(maxRequestCount):
     i += 1
     c += 1
-    print(c)
+    #print(c)
     handle_request()
 try:
     ioloop.IOLoop.instance().start()
@@ -55,7 +60,7 @@ except ConnectionRefusedError:
         for q in range(j, 1000):
             i += 1
             c += 1
-            print(c)
+            #print(c)
             handle_request()
     except ConnectionRefusedError:
         print("Over dude")
