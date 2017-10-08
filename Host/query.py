@@ -23,7 +23,7 @@ class EnableCors(object):
 
 
 app = bottle.app()
-serverCount = 2
+serverCount = 4
 
 @app.route('/stats',method = 'GET')
 def process():
@@ -44,12 +44,6 @@ def process():
     else:
         response[request.query['id']] = json.loads(requests.get("http://localhost:"+str(vm_id)+"/stats").text)
     return response
-
-@app.route('/', method='GET')
-def landing():
-    servers = ['http://localhost:8081', 'http://localhost:8082']
-    chosen = choose(servers)
-    return requests.get(chosen)
 
 @app.route('/numservers', method = "GET")
 def getservers():
