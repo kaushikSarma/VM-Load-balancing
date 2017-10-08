@@ -3,6 +3,7 @@
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: all 0.2s;
+    color: #2d2d2d;
 }
 body{
     padding: 0;
@@ -13,18 +14,22 @@ body{
 .chartContainer{
     display: inline-flex;
     position: relative;
-    margin-top: 55px;
+    margin-top: 65px;
 }
 .chartContainer > h1{
     position: absolute;
     width: 100%;
-    margin-top: -40px;
+    padding: 10px;
+    margin-top: -65px;
+    color: rgba(100,250,200,1);
+    background: #2d2d2d;
+    text-decoration: underline;
 }
 
 .chart{
     position: relative;
     display: inline-flex;
-    height: 500px;
+    height: 600px;
     width: 50vw;
     /* background: #ffddde; */
 }
@@ -32,9 +37,10 @@ body{
 .chart::after {
     content: attr(data-packets);
     position: absolute;
-    bottom: -20px;
+    bottom: -30px;
     width: 100%;
     text-align: center;
+    text-decoration: underline;
 }
 
 nav.footer{
@@ -44,11 +50,12 @@ nav.footer{
     left: 50%;
     transform: translateX(-50%);
     padding: 20px;
-    background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8)); /* Standard syntax */
+    background: #2d2d2d;
     color: #fdfdfd;
 }
 
 nav.footer > span {
+    color: #ffffff;
     position: relative;
     padding-left: 10px;
     padding-right: 10px;

@@ -3,7 +3,7 @@
         nservers: 0,
         // url: 'http://localhost:8070/',
         url: 'http://192.168.1.103:8070/',
-        updateInterval: 300,
+        updateInterval: 150,
         dataLength: 20,
         servers: {},
         currentID: 'cpu',
@@ -64,13 +64,21 @@
             category.container.append('<div  data-packets="0 packets received" class="chart" id="' + type + 'Chart' + i + '"></div>');
             category.dps[i] = []
             category.charts[i] = new CanvasJS.Chart(type + "Chart" + i, {
-                    title :{
-                        text: "Server " + i 
+                    title:{
+                        text: "Server " + i,  
+                        fontColor: "rgba(45, 45, 45, 0.3)",
+                        fontSize: 30,
+                        padding: 10,
+                        margin: 15,
+                        backgroundColor: "rgba()",
+                        dockInsidePlotArea: true
                     },
                     axisY: {
                         includeZero: false,
                         maximum: 100,
-                        minimum: 0
+                        minimum: 0,
+                        tickThickness: 0,
+                        lineThickness: 0
                     },      
                     axisX: {
                         tickLength: 0,
@@ -79,6 +87,7 @@
                     },
                     data: [{
                         type: "splineArea",
+                        color: "rgba(54,158,173,.7)",
                         dataPoints: category.dps[i]
                     }]
                 });
