@@ -9,8 +9,12 @@
         <link rel="stylesheet" href="style/main.css"/>
     </head>
     <body>
-        <div class="chartContainer" id="cpuChartContainer" style="width: 100vw; height: 500px"></div>            
-        <br/>
-        <div class="chartContainer" id="memChartContainer" style="width: 100vw; height: 500px"></div>            
+        <div class="chartContainer" id="cpuChartContainer" style="width: 100vw; height: 500px"><span>CPU</span></div>            
+        <div class="chartContainer" id="memChartContainer" style="display: none; width: 100vw; height: 500px"><span>CPU</span></div>            
+        <nav class="footer">
+            <span class="changeGraph" id="cpu">CPU</span>
+            <span class="changeGraph" id="mem">MEMORY</span>
+            <span class="changeGraph" id="net">NETWORK</span>
+        </nav>
     </body>
 </html> 
