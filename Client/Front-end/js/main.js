@@ -1,8 +1,8 @@
 (function($){
     var GLOBALS = {                             //  Global variables 
         nservers: 0,
-        // url: 'http://localhost:8070/,
-        url: 'http://192.168.2.107:8070/',
+        // url: 'http://localhost:8070/',
+        url: 'http://192.168.1.103:8070/',
         updateInterval: 150,
         dataLength: 20,
         servers: {},
@@ -38,7 +38,7 @@
                 failure: function(status){
                 }
             }).responseText;
-            // console.log(data);
+            console.log(data);
             data = JSON.parse(data);
             return data;
         },
@@ -61,16 +61,24 @@
     PopulateCharts = function(category, type){  //  Function to append corresponding charts
         category.container = $('#' + type + 'ChartContainer');
         for(i=1; i <= GLOBALS.nservers; i++){
-            category.container.append('<div class="chart" id="' + type + 'Chart' + i + '"></div>');
+            category.container.append('<div  data-packets="0 packets received" class="chart" id="' + type + 'Chart' + i + '"></div>');
             category.dps[i] = []
             category.charts[i] = new CanvasJS.Chart(type + "Chart" + i, {
-                    title :{
-                        text: "Server " + i 
+                    title:{
+                        text: "Server " + i,  
+                        fontColor: "rgba(45, 45, 45, 0.3)",
+                        fontSize: 30,
+                        padding: 10,
+                        margin: 15,
+                        backgroundColor: "rgba()",
+                        dockInsidePlotArea: true
                     },
                     axisY: {
                         includeZero: false,
                         maximum: 100,
-                        minimum: 0
+                        minimum: 0,
+                        tickThickness: 0,
+                        lineThickness: 0
                     },      
                     axisX: {
                         tickLength: 0,
@@ -79,6 +87,7 @@
                     },
                     data: [{
                         type: "splineArea",
+                        color: "rgba(54,158,173,.7)",
                         dataPoints: category.dps[i]
                     }]
                 });
@@ -113,13 +122,14 @@
                     console.log('stop', IntervalRequestLoop);
                     clearInterval(IntervalRequestLoop);
                     IntervalRequestLoop = null;
-                    $(this).text('Start');
+                    $(this).html('Start<span></span>');
                 }
                 else {
-                    $(this).text('Stop');                    
+                    $(this).html('Stop<span></span>');                    
                     IntervalRequestLoop = setInterval(function(){
                         GLOBALS.servers = ServerRequest.request(0);
                         for (var key in GLOBALS.servers) {
+                            $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].net['eth0'][3] + ' packets received');
                             UpdateCharts(GLOBALS.currentCategory, key);
                         }
                     }, GLOBALS.updateInterval);    

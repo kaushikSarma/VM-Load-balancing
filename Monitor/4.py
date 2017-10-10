@@ -1,5 +1,5 @@
 import psutil
-from bottle import run, post, request, response, get, route
+from bottle import run, route
 
 @route('/stats',method = 'GET')
 def process():

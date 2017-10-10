@@ -1,5 +1,5 @@
 import requests
-from bottle import run, post, request, response, get, route
+from bottle import run, route
 
 prev = -1
 serverCount = 4

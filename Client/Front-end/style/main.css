@@ -3,47 +3,81 @@
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: all 0.2s;
+    color: #2d2d2d;
 }
 body{
     padding: 0;
     margin: 0;
     height: 100vh;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 .chartContainer{
     display: inline-flex;
     position: relative;
+    margin-top: 65px;
 }
 .chartContainer > h1{
     position: absolute;
     width: 100%;
+    padding: 10px;
+    margin-top: -65px;
+    color: rgba(100,250,200,1);
+    background: #2d2d2d;
+    text-decoration: underline;
 }
 
 .chart{
     position: relative;
     display: inline-flex;
-    height: 500px;
+    height: 600px;
     width: 50vw;
-    background: #ffddde;
-    margin: 10px;
+    /* background: #ffddde; */
+}
+
+.chart::after {
+    content: attr(data-packets);
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    text-align: center;
+    text-decoration: underline;
 }
 
 nav.footer{
+    width: 100vw;
     position: fixed;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     padding: 20px;
-    background: rgba(0,0,0,0.5);
+    background: #2d2d2d;
     color: #fdfdfd;
 }
 
 nav.footer > span {
-    margin-left: 10px;
-    margin-right: 10px;
+    color: #ffffff;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
     cursor: pointer;
 }
 
+nav.footer > span > span {
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    border-radius: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffffff;    
+    bottom: -5px;
+}
+
 nav.footer > span:hover {
-    color: rgba(100,250,200,1)
-}    
+    color: rgba(100,250,200,1);
+}
+
+nav.footer > span:hover > span{
+    width: 100%;
+}
+    
