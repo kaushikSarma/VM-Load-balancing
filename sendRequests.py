@@ -3,13 +3,23 @@ import time
 import requests
 import sys
 import requests
+import re
 
 s = time.time()
 maxRequestCount = 1000000000
 
 i = 0
 c = 0
-ip = "http://192.168.1.103:8071/"
+
+# Takes destination ip as command line input
+if len(sys.argv) > 1:
+    if re.match("^http", sys.argv[1]):
+        ip = sys.argv[1]
+    else:
+        ip = "http://" + sys.argv[1]
+else:
+    ip = "http://192.168.1.103:8071/"
+
 # ip = "http://localhost:8071/"
 
 # Suppresses the error from printing
