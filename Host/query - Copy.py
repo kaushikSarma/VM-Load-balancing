@@ -56,18 +56,6 @@ def process():
 def getservers():
     return {'n': serverCount}
 
-@app.route('/consumeMemory', method='GET')
-def consume():
-    arr_size = request.query['id'] - 1
-
-    for index, vm in enumerate(vmList):
-        try:
-            print("url = " + vm)
-            res = requests.get(vm)
-            response[index + 1] = json.loads(res.text)
-        except:
-            pass
-
 app.install(EnableCors())
 
 app.run(host='0.0.0.0', port=8070, debug=True)
