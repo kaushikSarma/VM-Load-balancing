@@ -6,6 +6,7 @@ count = 0
 
 @route('/stats',method = 'GET')
 def process():
+    global count
     netUtilData = psutil.net_io_counters(pernic=True)
     cpuUtilData = psutil.cpu_percent()
     memUtilData = psutil.virtual_memory()
