@@ -26,47 +26,34 @@ class EnableCors(object):
 
         return _enable_cors
 
+def main():
+    VirtualServerQueue = balance.ServerQue()
 
-app = bottle.app()
+    app = bottle.app()
+    app.install(EnableCors())
 
-# list of VM ip addresses
-vmList = balance.generateServerAddress(config.base, config.start, config.serverCount)
+    # server route
+    @app.route('/',method = 'GET')
+    def process():
+        return VirtualServerQueue.requestService()
 
-# server route
-@app.route('/',method = 'GET')
-def process():
-    vm_ip = balance.choose(vmList)
-    toreturn = json.loads(requests.get(vm_ip).text)
-    return toreturn
+    # functiont to route /stats requests 
+    @app.route('/stats',method = 'GET')
+    def process():
+        toreturn = {}
+        #vm_id = int(request.query['id']) + start - 1
+        vm_id = int(request.query['id']) - 1
+        return VirtualServerQueue.updateStats(vm_id)
 
-# functiont to route /stats requests 
-@app.route('/stats',method = 'GET')
-def process():
-    toreturn = {}
+    # function to return /numserver requests. Returns the number of active VM
+    @app.route('/numservers', method = "GET")
+    def getservers():
+        return {'n': config.servercount}
 
-    #vm_id = int(request.query['id']) + start - 1
-    vm_id = int(request.query['id']) - 1
-    # if id = 0, return status array of all servers 
-    if vm_id == -1:
-        for index, vm in enumerate(vmList):
-            try:
-                print("url = " + vm)
-                res = requests.get(vm)
-                toreturn[index + 1] = json.loads(res.text)
-            except:
-                pass
-    else:
-        toreturn[vm_id + 1]  = json.loads(requests.get(vmList[vm_id]).text)
+    # initiate and run the server
+    app.run(host="0.0.0.0", port=8070, debug=True)
     
-    return toreturn
+    pass
 
-# function to return /numserver requests. Returns the number of active VM
-@app.route('/numservers', method = "GET")
-def getservers():
-    return {'n': config.serverCount}
-
-app.install(EnableCors())
-
-# initiate and run the server
-app.run(host="0.0.0.0", port=8070, debug=True)
-
+if __name__ == '__main__':
+    main()
