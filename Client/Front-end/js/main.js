@@ -1,8 +1,8 @@
 (function($){
     var GLOBALS = {                             //  Global variables 
         nservers: 0,
-        // url: 'http://localhost:8070/',
-        url: 'http://192.168.1.103:8070/',
+        url: 'http://localhost:8070/',
+        // url: 'http://192.168.1.103:8070/',
         updateInterval: 150,
         dataLength: 20,
         servers: {},
