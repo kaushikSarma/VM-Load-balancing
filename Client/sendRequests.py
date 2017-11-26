@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
     else:
         ip = "http://" + sys.argv[1]
 else:
-    ip = "http://192.168.1.103:8071/"
+    ip = "http://localhost:8070/"
 
 # ip = "http://localhost:8071/"
 

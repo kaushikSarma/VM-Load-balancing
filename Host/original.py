@@ -20,7 +20,7 @@ def enhancedActiveVMLoadBalancer(vmStateList, currentAllocationCounts):
                 vmId = i
                 break
     else:
-        minCount = sys.maxint
+        minCount = sys.maxsize
         for i, vm in enumerate(vmStateList):
             curCount = currentAllocationCounts[i]
 

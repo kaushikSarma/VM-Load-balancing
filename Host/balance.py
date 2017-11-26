@@ -1,9 +1,14 @@
-from pprint import pprint as pp
-import requests
-import bottle
-from bottle import run, route, request, response
 import json
-import config 
+import sys
+from functools import reduce
+from pprint import pprint as pp
+
+import bottle
+import requests
+from bottle import request, response, route, run
+
+import config
+
 
 # server collection datastructure
 class ServerQue:
@@ -13,7 +18,9 @@ class ServerQue:
         self.servercount = config.servercount
         self.serverip = generateServerAddress(self.base, self.start, self.servercount)
         self.stats = {}
+        self.currentAllocationCounts = [ 0 ] * self.servercount
         self.prev = -1
+        self.tempVmId = -1
 
     def updateStats(self, id):
         if id == -1:
@@ -30,8 +37,47 @@ class ServerQue:
         return self.stats
 
     def requestService(self):
-        return json.loads(requests.get(self.choose()).text)
-    
+        chosen = self.enhancedActiveVMLoadBalancer()
+        self.currentAllocationCounts[chosen] += 1
+        
+        resp = json.loads(requests.get(chosen).text)
+        
+        self.currentAllocationCounts -= 1
+        return resp
+
+
+    def enhancedActiveVMLoadBalancer(self):
+        '''
+            vmStateList:                Dict<vmId, vmState>
+            currentAllocationCounts:    Dict<vmId, currentActiveAllocationCount>
+        '''
+        vmStateList = self.stats
+        currentAllocationCounts = self.currentAllocationCounts
+
+        tempVmId = self.tempVmId
+        vmId = -1
+
+        totalAllocations = reduce(lambda x, y: x + y, currentAllocationCounts)
+        print(totalAllocations, vmStateList)
+        if(totalAllocations < len(vmStateList)):
+            for i, vm in enumerate(vmStateList):
+                if(currentAllocationCounts[i] == 0):
+                    vmId = i
+                    break
+        else:
+            minCount = sys.maxsize
+            for i, vm in enumerate(vmStateList):
+                curCount = currentAllocationCounts[i]
+
+                if(curCount < minCount):
+                    if(i != tempVmId):
+                        vmId = i
+                        break
+
+        tempVmId = vmId
+        print("Returning, ", vmId)
+        return vmId
+
     def choose(self):
         ''' Currently implements round robin '''
         self.prev = (self.prev + 1) % self.servercount
@@ -43,10 +89,9 @@ class ServerQue:
 def generateServerAddress(base, start, servercount):
     return [base % str(i) for i in range(start, start + servercount)]
 
-# implementation of round robin
-def choose(servers):
-    ''' Currently implements round robin '''
-    global prev
-    size = len(servers)
-    prev = (prev + 1) % size
-    return servers[prev]
+
+
+temp = ServerQue()
+temp.updateStats(-1)
+ch = temp.enhancedActiveVMLoadBalancer()
+print(ch)

@@ -28,6 +28,7 @@ class EnableCors(object):
 
 def main():
     VirtualServerQueue = balance.ServerQue()
+    VirtualServerQueue.updateStats(-1)
 
     app = bottle.app()
     app.install(EnableCors())
