@@ -4,6 +4,13 @@ from bottle import run, route
 # Static variable - stores number of requests processed
 count = 0
 
+@route('/',method = 'GET')
+def process():
+    global count
+    count += 1
+    return {'count': count}
+
+
 @route('/stats',method = 'GET')
 def process():
     global count
@@ -18,4 +25,4 @@ def process():
         'count': count
     }
 
-run(host='localhost', port=8081, debug=True)
+run(host='0.0.0.0', port=8081, debug=True)

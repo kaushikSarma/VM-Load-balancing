@@ -32,6 +32,13 @@ app = bottle.app()
 # list of VM ip addresses
 vmList = balance.generateServerAddress(config.base, config.start, config.serverCount)
 
+# server route
+@app.route('/',method = 'GET')
+def process():
+    vm_ip = balance.choose(vmList)
+    toreturn = json.loads(requests.get(vm_ip).text)
+    return toreturn
+
 # functiont to route /stats requests 
 @app.route('/stats',method = 'GET')
 def process():
