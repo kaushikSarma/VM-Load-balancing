@@ -1,10 +1,15 @@
 from pprint import pprint as pp
 import requests
 import bottle
-from bottle import run, route
-from balance import choose
+from bottle import run, route, request, response
 import json
 
+# import balancer functions
+import balance
+# import global config variables
+import config
+
+# class to deal with CORS errors 
 class EnableCors(object):
     name = 'enable_cors'
 
@@ -23,33 +28,38 @@ class EnableCors(object):
 
 
 app = bottle.app()
-serverCount = 4
 
+# list of VM ip addresses
+vmList = balance.generateServerAddress(config.base, config.start, config.serverCount)
+
+# functiont to route /stats requests 
 @app.route('/stats',method = 'GET')
 def process():
-    const = 8080
-    response = dict()
+    toreturn = {}
 
-    vm_id = int(request.query['id']) + const
-
+    #vm_id = int(request.query['id']) + start - 1
+    vm_id = int(request.query['id']) - 1
     # if id = 0, return status array of all servers 
-    if vm_id == const:
-        for i in range(1, serverCount+1):
+    if vm_id == -1:
+        for index, vm in enumerate(vmList):
             try:
-                print("url = " + "http://localhost:"+str(vm_id + i)+"/stats")
-                res = requests.get("http://localhost:"+str(vm_id + i)+"/stats")
-                response[str(i)] = json.loads(res.text)
+                print("url = " + vm)
+                res = requests.get(vm)
+                toreturn[index + 1] = json.loads(res.text)
             except:
                 pass
     else:
-        response[request.query['id']] = json.loads(requests.get("http://localhost:"+str(vm_id)+"/stats").text)
-    return response
+        toreturn[vm_id + 1]  = json.loads(requests.get(vmList[vm_id]).text)
+    
+    return toreturn
 
+# function to return /numserver requests. Returns the number of active VM
 @app.route('/numservers', method = "GET")
 def getservers():
-    return {'n': serverCount}
+    return {'n': config.serverCount}
 
 app.install(EnableCors())
 
+# initiate and run the server
 app.run(host="0.0.0.0", port=8070, debug=True)
 

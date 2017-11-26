@@ -129,7 +129,8 @@
                     IntervalRequestLoop = setInterval(function(){
                         GLOBALS.servers = ServerRequest.request(0);
                         for (var key in GLOBALS.servers) {
-                            $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].net['eth0'][3] + ' packets received');
+                            // $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].net['eth0'][3] + ' requests served');
+                            $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].count + ' requests served');
                             UpdateCharts(GLOBALS.currentCategory, key);
                         }
                     }, GLOBALS.updateInterval);    
