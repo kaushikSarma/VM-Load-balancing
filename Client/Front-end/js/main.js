@@ -7,7 +7,9 @@
         dataLength: 20,
         servers: {},
         currentID: 'cpu',
-        currentCategory: null
+        currentCategory: null,
+        serverRequestsPerMin: [],
+        avgTimeScale: 1                         // time in minutes
     },
     CPUGraphs = {                               //  Wrapper object for CPU graphs, rendered in CanvasJS
         container: null,
@@ -38,7 +40,7 @@
                 failure: function(status){
                 }
             }).responseText;
-            console.log(data);
+            // console.log(data);
             data = JSON.parse(data);
             return data;
         },
@@ -106,6 +108,21 @@
         }
         category.charts[chartid].render();
     },
+    UpdateAvgRequest = function() {
+        console.log(GLOBALS.nservers);
+        for (i = 0; i < GLOBALS.nservers; i++) {
+            GLOBALS.serverRequestsPerMin[i] = 0;
+            $('#' + GLOBALS.currentID + 'Chart' + i).attr('data-packets', GLOBALS.serverRequestsPerMin[i]);
+        }
+        setInterval(function() {
+            for (var key in GLOBALS.servers) {
+                var prev = GLOBALS.serverRequestsPerMin[key] == undefined ? 0 : GLOBALS.serverRequestsPerMin[key];
+                var diff = GLOBALS.servers[key].count - prev; 
+                $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', diff + ' requests served/minute');                    
+                GLOBALS.serverRequestsPerMin[key] = GLOBALS.servers[key].count;
+            }
+        }, GLOBALS.avgTimeScale*60*1000);
+    },
     IntervalRequestLoop = null;
 
     $(document).ready(function(){
@@ -114,7 +131,7 @@
         GLOBALS.currentCategory = CPUGraphs;
         PopulateCharts(CPUGraphs, 'cpu');        
         PopulateCharts(MEMGraphs, 'mem');        
-
+        UpdateAvgRequest();
         ToggleRequestButton = $('#toggleRequest')
             .bind('click', function(){
                 console.log('toggle', IntervalRequestLoop);
@@ -130,7 +147,7 @@
                         GLOBALS.servers = ServerRequest.request(0);
                         for (var key in GLOBALS.servers) {
                             // $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].net['eth0'][3] + ' requests served');
-                            $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].count + ' requests served');
+                            // $('#' + GLOBALS.currentID + 'Chart' + key).attr('data-packets', GLOBALS.servers[key].count + ' requests served');
                             UpdateCharts(GLOBALS.currentCategory, key);
                         }
                     }, GLOBALS.updateInterval);    
