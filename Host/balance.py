@@ -85,9 +85,12 @@ class ServerQue:
         return self.serverip[self.prev]
 
 
-# generate a list of IP addresses for the 
+# generate a list of IP addresses for the
 def generateServerAddress(base, start, servercount):
     return [base % str(i) for i in range(start, start + servercount)]
+
+def average(stats):
+    return (stats.cpu + stats.mem)/200;
 
 
 
