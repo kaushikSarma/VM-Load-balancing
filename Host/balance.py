@@ -40,13 +40,12 @@ class ServerQue:
         chosen = self.enhancedActiveVMLoadBalancer()
         self.currentAllocationCounts[chosen] += 1
         
-        resp = json.loads(requests.get(chosen).text)
+        resp = json.loads(requests.get(self.serverip[chosen]).text)
         
-        self.currentAllocationCounts -= 1
+        self.currentAllocationCounts[chosen] -= 1
         return resp
 
-
-    def enhancedActiveVMLoadBalancer(self):
+    def activeVMLoadBalancer(self):
         '''
             vmStateList:                Dict<vmId, vmState>
             currentAllocationCounts:    Dict<vmId, currentActiveAllocationCount>
@@ -70,13 +69,42 @@ class ServerQue:
                 curCount = currentAllocationCounts[i]
 
                 if(curCount < minCount):
-                    if(i != tempVmId):
-                        vmId = i
-                        break
+                    vmId = i
 
         tempVmId = vmId
         print("Returning, ", vmId)
         return vmId
+    
+    def enhancedActiveVMLoadBalancer(self):
+        '''
+            vmStateList:                Dict<vmId, vmState>
+            currentAllocationCounts:    Dict<vmId, currentActiveAllocationCount>
+        '''
+        vmStateList = self.stats
+        currentAllocationCounts = self.currentAllocationCounts
+
+        tempVmId = self.tempVmId
+        vmId = -1
+
+        totalAllocations = reduce(lambda x, y: x + y, currentAllocationCounts)
+        # print(totalAllocations, vmStateList)
+        if(totalAllocations < len(vmStateList)):
+            for i, vm in enumerate(vmStateList):
+                if(currentAllocationCounts[i] == 0):
+                    vmId = i
+                    break
+        else:
+            minAvg = sys.maxsize
+            pp(vmStateList)
+            for i in vmStateList:
+                curAvg = average(self.stats[i]) 
+                if(curAvg < minAvg):
+                    minAvg = curAvg
+                    vmId = i
+                    
+        tempVmId = vmId
+        print("Returning, ", vmId - 1)
+        return vmId - 1
 
     def choose(self):
         ''' Currently implements round robin '''
@@ -90,11 +118,11 @@ def generateServerAddress(base, start, servercount):
     return [base % str(i) for i in range(start, start + servercount)]
 
 def average(stats):
-    return (stats.cpu + stats.mem)/200;
+    return (stats['cpu'] + stats['mem'])/200
 
 
 
-temp = ServerQue()
-temp.updateStats(-1)
-ch = temp.enhancedActiveVMLoadBalancer()
-print(ch)
+# temp = ServerQue()
+# temp.updateStats(-1)
+# ch = temp.enhancedActiveVMLoadBalancer()
+# print(ch)

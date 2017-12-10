@@ -1,17 +1,17 @@
 import psutil
-# from bottle import run, route
+from bottle import run, route
 
 # Static variable - stores number of requests processed
 count = 0
 
-# @route('/',method = 'GET')
+@route('/',method = 'GET')
 def process():
     global count
     count += 1
     return {'count': count}
 
 
-# @route('/stats',method = 'GET')
+@route('/stats',method = 'GET')
 def process():
     global count
     netUtilData = psutil.net_io_counters(pernic=True)
@@ -19,10 +19,12 @@ def process():
     memUtilData = psutil.virtual_memory()
     count += 1
     return {
-        # 'net': netUtilData,
+        'net': netUtilData,
         'cpu': cpuUtilData,
         'mem': float(memUtilData.used * 100) / memUtilData.total,
         'count': count
     }
 
-# run(host='0.0.0.0', port=8081, debug=True)
+    
+run(host='0.0.0.0', port=8081, debug=True)
+
