@@ -60,22 +60,21 @@ class ServerQue:
         vmId = -1
 
         totalAllocations = reduce(lambda x, y: x + y, currentAllocationCounts)
-        # print(totalAllocations, vmStateList)
+        #print(totalAllocations, vmStateList)
         if(totalAllocations < len(vmStateList)):
-            for i, vm in enumerate(vmStateList):
-                if(currentAllocationCounts[i] == 0):
+            for i in vmStateList:
+                if(currentAllocationCounts[i-1] == 0):
                     vmId = i
                     break
         else:
             minCount = sys.maxsize
-            for i, vm in enumerate(vmStateList):
-                curCount = currentAllocationCounts[i]
+            for i in vmStateList:
+                #print(i, vm)
+                curCount = currentAllocationCounts[i-1]
 
                 if(curCount < minCount):
                     vmId = i
-
-        tempVmId = vmId
-        # print("Returning, ", vmId - 1)
+        # print("Returning, ", vmId)
         return vmId - 1
     
     def enhancedActiveVMLoadBalancer(self):
@@ -83,36 +82,30 @@ class ServerQue:
             vmStateList:                Dict<vmId, vmState>
             currentAllocationCounts:    Dict<vmId, currentActiveAllocationCount>
         '''
-        vmStateList = self.stats
-        currentAllocationCounts = self.currentAllocationCounts
-
-        tempVmId = self.tempVmId
         vmId = -1
 
-        totalAllocations = reduce(lambda x, y: x + y, currentAllocationCounts)
+        totalAllocations = reduce(lambda x, y: x + y, self.currentAllocationCounts)
         # print(totalAllocations, vmStateList)
-        if(totalAllocations < len(vmStateList)):
-            for i, vm in enumerate(vmStateList):
-                if(currentAllocationCounts[i] == 0):
+        if(totalAllocations < len(self.stats)):
+            for i in self.stats:
+                if(self.currentAllocationCounts[i-1] == 0):
                     vmId = i
                     break
         else:
             minAvg = sys.maxsize
             # pp(vmStateList)
-            for i in vmStateList:
-                curAvg = average(self.stats[i]) 
+            for i in self.stats:
+                curAvg = (self.stats[i]['cpu'] + self.stats[i]['mem'])/200
                 if(curAvg < minAvg):
                     minAvg = curAvg
                     vmId = i
-                    
-        tempVmId = vmId
-        # print("Returning, ", vmId - 1)
+        # print("Returning, ", vmId)
         return vmId - 1
 
     def choose(self):
         ''' Currently implements round robin '''
         self.prev = (self.prev + 1) % self.servercount
-        print(self.serverip[self.prev])
+        # print(self.serverip[self.prev])
         return self.serverip[self.prev]
 
 
