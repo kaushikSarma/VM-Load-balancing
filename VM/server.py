@@ -25,6 +25,4 @@ def process():
         'count': count
     }
 
-    
 run(host='0.0.0.0', port=8081, debug=True)
-

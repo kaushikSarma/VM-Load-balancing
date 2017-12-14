@@ -26,7 +26,9 @@
         dps: [],
         xVal: 0,
         getY: function(chartid){
-            return GLOBALS.servers[chartid].mem[2];            
+			if (GLOBALS.servers[chartid].mem instanceof Object)
+				return GLOBALS.servers[chartid].mem.percent;            
+			return GLOBALS.servers[chartid].mem;            
         }
     },
     ServerRequest = {                           //  Wrapper for functions to send requests to query.py 

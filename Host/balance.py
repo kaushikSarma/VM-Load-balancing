@@ -6,6 +6,9 @@ from pprint import pprint as pp
 import bottle
 import requests
 from bottle import request, response, route, run
+import aiohttp
+from gevent import monkey
+monkey.patch_all()
 
 import config
 
@@ -26,25 +29,25 @@ class ServerQue:
         if id == -1:
             for index, vm in enumerate(self.serverip):
                 try:
-                    print("url = " + vm + "/stats")
+                    # print("url = " + vm + "/stats")
                     res = requests.get(vm + "/stats")
                     self.stats[index + 1] = json.loads(res.text)
                 except:
                     pass
         else:
-            self.stats[id + 1]  = json.loads(requests.get(self.stats[id]).text)
+            self.stats[id + 1]  = json.loads(requests.get(self.serverip[id]).text)
         
         return self.stats
 
-    def requestService(self):
+    async def requestService(self):
         chosen = self.enhancedActiveVMLoadBalancer()
+        # chosen = self.activeVMLoadBalancer()
         self.currentAllocationCounts[chosen] += 1
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.serverip[chosen]) as resp:
+                # print(resp.status)
+                return await resp.text()
         
-        resp = json.loads(requests.get(self.serverip[chosen]).text)
-        
-        self.currentAllocationCounts[chosen] -= 1
-        return resp
-
     def activeVMLoadBalancer(self):
         '''
             vmStateList:                Dict<vmId, vmState>
@@ -57,7 +60,7 @@ class ServerQue:
         vmId = -1
 
         totalAllocations = reduce(lambda x, y: x + y, currentAllocationCounts)
-        print(totalAllocations, vmStateList)
+        # print(totalAllocations, vmStateList)
         if(totalAllocations < len(vmStateList)):
             for i, vm in enumerate(vmStateList):
                 if(currentAllocationCounts[i] == 0):
@@ -72,8 +75,8 @@ class ServerQue:
                     vmId = i
 
         tempVmId = vmId
-        print("Returning, ", vmId)
-        return vmId
+        # print("Returning, ", vmId - 1)
+        return vmId - 1
     
     def enhancedActiveVMLoadBalancer(self):
         '''
@@ -95,7 +98,7 @@ class ServerQue:
                     break
         else:
             minAvg = sys.maxsize
-            pp(vmStateList)
+            # pp(vmStateList)
             for i in vmStateList:
                 curAvg = average(self.stats[i]) 
                 if(curAvg < minAvg):
@@ -103,7 +106,7 @@ class ServerQue:
                     vmId = i
                     
         tempVmId = vmId
-        print("Returning, ", vmId - 1)
+        # print("Returning, ", vmId - 1)
         return vmId - 1
 
     def choose(self):
@@ -121,6 +124,7 @@ def average(stats):
     return (stats['cpu'] + stats['mem'])/200
 
 
+VirtualServerQueue = ServerQue()
 
 # temp = ServerQue()
 # temp.updateStats(-1)

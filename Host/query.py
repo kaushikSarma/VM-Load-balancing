@@ -2,10 +2,11 @@ from pprint import pprint as pp
 import requests
 import bottle
 from bottle import run, route, request, response
+
 import json
 
 # import balancer functions
-import balance
+from balance import VirtualServerQueue
 # import global config variables
 import config
 
@@ -27,7 +28,6 @@ class EnableCors(object):
         return _enable_cors
 
 def main():
-    VirtualServerQueue = balance.ServerQue()
     VirtualServerQueue.updateStats(-1)
 
     app = bottle.app()
